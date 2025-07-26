@@ -1,783 +1,296 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TAPE – Technology Assisted Plant Emulator</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-  <style>
-    :root {
-      --primary: #2e7d32;
-      --primary-dark: #1b5e20;
-      --primary-light: #81c784;
-      --secondary: #ff8f00;
-      --text-light: #f1f8e9;
-      --text-dark: #1b5e20;
-      --bg-light: #f8fbf8;
-      --bg-card: #ffffff;
-      --border-radius: 12px;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    }
-
-    /* Dark mode variables */
-    .dark-mode {
-      --primary: #388e3c;
-      --primary-dark: #2e7d32;
-      --primary-light: #66bb6a;
-      --secondary: #ffa000;
-      --text-light: #e8f5e9;
-      --text-dark: #a5d6a7;
-      --bg-light: #121e12;
-      --bg-card: #1e2b1e;
-      --shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-light);
-      color: var(--text-dark);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      transition: var(--transition);
-      line-height: 1.6;
-    }
-
-    /* Typography */
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-      line-height: 1.2;
-    }
-
-    h2 {
-      font-size: 2rem;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      position: relative;
-      display: inline-block;
-    }
-
-    h2:after {
-      content: '';
-      position: absolute;
-      bottom: -8px;
-      left: 0;
-      width: 60px;
-      height: 3px;
-      background: var(--primary);
-      border-radius: 3px;
-    }
-
-    h3 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 1rem;
-    }
-
-    p {
-      margin-bottom: 1.25rem;
-      font-weight: 400;
-    }
-
-    /* Layout */
-    .container {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-
-    /* Navigation */
-    nav {
-      background-color: var(--primary-dark);
-      color: var(--text-light);
-      padding: 1rem 2rem;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      display: flex;
-      align-items: center;
-    }
-
-    .logo {
-      font-size: 1.8rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      margin-right: auto;
-    }
-
-    .logo i {
-      margin-right: 10px;
-      color: var(--primary-light);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1.5rem;
-    }
-
-    .nav-link {
-      color: var(--text-light);
-      text-decoration: none;
-      font-weight: 500;
-      padding: 0.5rem 0;
-      position: relative;
-      transition: var(--transition);
-    }
-
-    .nav-link:after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--primary-light);
-      transition: var(--transition);
-    }
-
-    .nav-link:hover:after,
-    .nav-link.active:after {
-      width: 100%;
-    }
-
-    .theme-toggle {
-      background: none;
-      border: none;
-      color: var(--text-light);
-      font-size: 1.2rem;
-      cursor: pointer;
-      margin-left: 2rem;
-      transition: var(--transition);
-    }
-
-    .theme-toggle:hover {
-      transform: scale(1.1);
-    }
-
-    /* Sections */
-    section {
-      padding: 4rem 0;
-      display: none;
-    }
-
-    section.active {
-      display: block;
-      animation: fadeIn 0.5s ease;
-    }
-
-    .section-header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-
-    .section-header p {
-      max-width: 700px;
-      margin: 0 auto;
-    }
-
-    /* Hero Section */
-    #home-section {
-      background: linear-gradient(135deg, rgba(46, 125, 50, 0.1) 0%, rgba(129, 199, 132, 0.05) 100%);
-    }
-
-    .hero-content {
-      text-align: center;
-      padding: 3rem 0;
-    }
-
-    .hero-content h1 {
-      font-size: 3rem;
-      background: linear-gradient(to right, var(--primary), var(--primary-dark));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .hero-content p {
-      font-size: 1.25rem;
-      max-width: 800px;
-      margin: 0 auto 2rem;
-    }
-
-    /* Cards */
-    .card-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
-      margin: 3rem 0;
-    }
-
-    .card {
-      background: var(--bg-card);
-      border-radius: var(--border-radius);
-      padding: 2rem;
-      box-shadow: var(--shadow);
-      transition: var(--transition);
-      border: 1px solid rgba(46, 125, 50, 0.1);
-    }
-
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    }
-
-    .card-icon {
-      font-size: 2.5rem;
-      color: var(--primary);
-      margin-bottom: 1.5rem;
-    }
-
-    .card h3 {
-      color: var(--primary-dark);
-    }
-
-    /* Buttons */
-    .btn {
-      display: inline-block;
-      padding: 0.8rem 2rem;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: var(--border-radius);
-      font-weight: 600;
-      cursor: pointer;
-      transition: var(--transition);
-      text-decoration: none;
-      text-align: center;
-    }
-
-    .btn:hover {
-      background: var(--primary-dark);
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(46, 125, 50, 0.3);
-    }
-
-    .btn-secondary {
-      background: var(--secondary);
-    }
-
-    .btn-secondary:hover {
-      background: #ff6f00;
-    }
-
-    .btn-block {
-      display: block;
-      width: 100%;
-    }
-
-    /* Form */
-    .form-container {
-      max-width: 700px;
-      margin: 0 auto;
-      background: var(--bg-card);
-      padding: 2.5rem;
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow);
-    }
-
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 0.8rem 1rem;
-      border: 1px solid #ddd;
-      border-radius: var(--border-radius);
-      font-family: inherit;
-      font-size: 1rem;
-      transition: var(--transition);
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
-    }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
-    }
-
-    /* Result box */
-    .result-box {
-      margin-top: 2rem;
-      background: rgba(129, 199, 132, 0.2);
-      padding: 1.5rem;
-      border-radius: var(--border-radius);
-      border-left: 4px solid var(--primary);
-      font-family: 'Courier New', monospace;
-      white-space: pre-line;
-    }
-
-    .dark-mode .result-box {
-      background: rgba(30, 70, 32, 0.5);
-    }
-
-    /* Footer */
-    footer {
-      background: var(--primary-dark);
-      color: var(--text-light);
-      text-align: center;
-      padding: 2rem;
-      margin-top: auto;
-    }
-
-    .footer-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .footer-links {
-      display: flex;
-      gap: 1.5rem;
-      margin: 1rem 0;
-    }
-
-    .footer-link {
-      color: var(--text-light);
-      text-decoration: none;
-      transition: var(--transition);
-    }
-
-    .footer-link:hover {
-      color: var(--primary-light);
-    }
-
-    .copyright {
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      opacity: 0.8;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      nav {
-        flex-direction: column;
-        padding: 1rem;
-      }
-
-      .logo {
-        margin-bottom: 1rem;
-        margin-right: 0;
-      }
-
-      .nav-links {
-        width: 100%;
-        justify-content: center;
-        flex-wrap: wrap;
-      }
-
-      .theme-toggle {
-        margin: 1rem 0 0;
-      }
-
-      .form-row {
-        grid-template-columns: 1fr;
-      }
-
-      h1 {
-        font-size: 2.2rem;
-      }
-
-      h2 {
-        font-size: 1.8rem;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TAPE - Technology Assisted Plant Emulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <nav>
-    <div class="logo">
-      <i class="fas fa-seedling"></i>
-      <span>TAPE</span>
-    </div>
-    <div class="nav-links">
-      <a href="#" class="nav-link active" data-section="home">Home</a>
-      <a href="#" class="nav-link" data-section="simulate">Simulate</a>
-      <a href="#" class="nav-link" data-section="objective">Objective</a>
-      <a href="#" class="nav-link" data-section="about">About</a>
-    </div>
-    <button class="theme-toggle" id="themeToggle">
-      <i class="fas fa-moon"></i>
-    </button>
-  </nav>
-
-  <!-- Home Section -->
-  <section id="home-section" class="active">
-    <div class="container">
-      <div class="hero-content">
-        <h1>Technology Assisted Plant Emulator</h1>
-        <p>Harness the power of AI to predict plant growth and optimize care for healthier, thriving plants</p>
-        <a href="#" class="btn" data-section="simulate">Start Simulation</a>
-      </div>
-
-      <div class="card-grid">
-        <div class="card">
-          <div class="card-icon">
-            <i class="fas fa-chart-line"></i>
-          </div>
-          <h3>Growth Forecasting</h3>
-          <p>Accurate predictions tailored to your plant species and environment for optimized care and maintenance.</p>
+    <nav>
+        <div class="logo">
+            <i class="fas fa-seedling"></i>
+            TAPE
         </div>
-        <div class="card">
-          <div class="card-icon">
-            <i class="fas fa-shield-alt"></i>
-          </div>
-          <h3>Disease Prevention</h3>
-          <p>Early detection system that identifies potential plant diseases and suggests preventative measures.</p>
+        <div class="nav-links">
+            <a href="#" class="nav-link active" data-section="home">Home</a>
+            <a href="#" class="nav-link" data-section="simulate">Simulate</a>
+            <a href="#" class="nav-link" data-section="objective">Objective</a>
+            <a href="#" class="nav-link" data-section="about">About</a>
+            <a href="#" class="nav-link" data-section="disease">Disease Detection</a>
         </div>
-        <div class="card">
-          <div class="card-icon">
-            <i class="fas fa-leaf"></i>
-          </div>
-          <h3>Environmental Adaptation</h3>
-          <p>Real-time monitoring adjusts recommendations based on your plant's specific growing conditions.</p>
+        <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </button>
+    </nav>
+
+    <section id="home-section" class="active">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Technology Assisted Plant Emulator</h1>
+                <p>Harness the power of AI to predict plant growth and optimize care for healthier, thriving plants</p>
+                <a href="#" class="btn btn-block" data-section="simulate">Start Simulation</a>
+            </div>
+
+            <div class="card-grid">
+                <div class="card">
+                    <i class="fas fa-chart-line card-icon"></i>
+                    <h3>Growth Forecasting</h3>
+                    <p>Accurate predictions tailored to your plant species and environment for optimized care and maintenance.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-shield-alt card-icon"></i>
+                    <h3>Disease Prevention</h3>
+                    <p>Early detection system that identifies potential plant diseases and suggests preventative measures.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-leaf card-icon"></i>
+                    <h3>Environmental Adaptation</h3>
+                    <p>Real-time monitoring adjusts recommendations based on your plant's specific growing conditions.</p>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Simulate Section -->
-  <section id="simulate-section">
-    <div class="container">
-      <div class="section-header">
-        <h2>Plant Growth Simulation</h2>
-        <p>Enter your plant's details to receive a customized growth prediction and care plan</p>
-      </div>
-
-      <div class="form-container">
-        <form id="simulate-form">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="plantType">Plant Type</label>
-              <input type="text" id="plantType" placeholder="e.g., Monstera Deliciosa" required />
+    <section id="simulate-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Plant Growth Simulation</h2>
+                <p>Enter your plant's details to receive a customized growth prediction and care plan</p>
             </div>
-            <div class="form-group">
-              <label for="plantVariety">Plant Variety (Optional)</label>
-              <input type="text" id="plantVariety" placeholder="e.g., Variegata" />
-            </div>
-          </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="placement">Plant Placement</label>
-              <select id="placement" required>
-                <option value="" disabled selected>Select placement</option>
-                <option>Indoor</option>
-                <option>Outdoor</option>
-                <option>Greenhouse</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="soilType">Soil Type</label>
-              <select id="soilType" required>
-                <option value="" disabled selected>Select soil type</option>
-                <option>Loamy</option>
-                <option>Clay</option>
-                <option>Sandy</option>
-                <option>Peat</option>
-                <option>Chalky</option>
-                <option>Silt</option>
-              </select>
-            </div>
-          </div>
+            <div class="simulation-container">
+                <div class="form-container simulation-form">
+                    <form id="simulate-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="plantType">Plant Type</label>
+                                <input type="text" id="plantType" placeholder="e.g., Tomato" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="plantVariety">Plant Variety (Optional)</label>
+                                <input type="text" id="plantVariety" placeholder="e.g., Cherry">
+                            </div>
+                        </div>
 
-          <div class="form-row">
-            <div class="form-group">
-              <label for="watering">Watering Frequency</label>
-              <input type="text" id="watering" placeholder="e.g., Every 3-4 days" required />
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="placement">Plant Placement</label>
+                                <select id="placement" required>
+                                    <option value="" selected disabled>Select placement</option>
+                                    <option value="Indoor">Indoor</option>
+                                    <option value="Outdoor">Outdoor</option>
+                                    <option value="Greenhouse">Greenhouse</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="soilType">Soil Type</label>
+                                <select id="soilType" required>
+                                    <option value="" selected disabled>Select soil type</option>
+                                    <option value="Loamy">Loamy</option>
+                                    <option value="Clay">Clay</option>
+                                    <option value="Sandy">Sandy</option>
+                                    <option value="Peat">Peat</option>
+                                    <option value="Chalky">Chalky</option>
+                                    <option value="Silt">Silt</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="watering">Watering Frequency</label>
+                                <input type="text" id="watering" placeholder="e.g., Twice weekly" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="sunlight">Sunlight Exposure</label>
+                                <input type="text" id="sunlight" placeholder="e.g., Full sun" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="temperature">Temperature Range (°C)</label>
+                                <input type="text" id="temperature" placeholder="e.g., 18-24" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="humidity">Humidity Level (%)</label>
+                                <input type="text" id="humidity" placeholder="e.g., 60%" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="growthStage">Current Growth Stage</label>
+                            <select id="growthStage">
+                                <option value="not specified">Not specified</option>
+                                <option value="Seed">Seed</option>
+                                <option value="Seedling">Seedling</option>
+                                <option value="Vegetative">Vegetative</option>
+                                <option value="Flowering">Flowering</option>
+                                <option value="Fruiting">Fruiting</option>
+                                <option value="Mature">Mature</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="notes">Additional Notes (Optional)</label>
+                            <textarea id="notes" rows="4" placeholder="Any additional information about your plant"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-block">Run Simulation</button>
+                    </form>
+                </div>
+
+                <div class="result-container">
+                    <div class="result-box" id="resultBox">
+                        <p>Your simulation results will appear here. The analysis will include:</p>
+                        <ul>
+                            <li>Growth rate prediction</li>
+                            <li>Optimal care recommendations</li>
+                            <li>Potential issues to watch for</li>
+                            <li>Environmental adjustments</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-              <label for="sunlight">Sunlight Exposure</label>
-              <input type="text" id="sunlight" placeholder="e.g., 4-6 hours indirect light" required />
-            </div>
-          </div>
-
-          <div class="form-row">
-            <div class="form-group">
-              <label for="temperature">Temperature Range (°C)</label>
-              <input type="text" id="temperature" placeholder="e.g., 18-24" required />
-            </div>
-            <div class="form-group">
-              <label for="humidity">Humidity Level (%)</label>
-              <input type="text" id="humidity" placeholder="e.g., 60-70" required />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="growthStage">Current Growth Stage</label>
-            <select id="growthStage">
-              <option value="" selected>Not specified</option>
-              <option>Seed</option>
-              <option>Seedling</option>
-              <option>Vegetative</option>
-              <option>Flowering</option>
-              <option>Fruiting</option>
-              <option>Mature</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="notes">Additional Notes (Optional)</label>
-            <textarea id="notes" rows="3" placeholder="Any special conditions or observations about your plant..."></textarea>
-          </div>
-
-          <button type="submit" class="btn btn-block">Run Simulation</button>
-        </form>
-
-        <div class="result-box" id="resultBox">
-          Your simulation results will appear here. The analysis will include:
-          - Growth rate prediction
-          - Optimal care recommendations
-          - Potential issues to watch for
-          - Environmental adjustments
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Objective Section -->
-  <section id="objective-section">
-    <div class="container">
-      <div class="section-header">
-        <h2>Our Mission</h2>
-        <p>Bridging technology and horticulture for sustainable plant care</p>
-      </div>
+    <section id="objective-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Our Mission</h2>
+                <p>Bridging technology and horticulture for sustainable plant care</p>
+            </div>
 
-      <div class="card">
-        <h3>Precision Horticulture</h3>
-        <p>At TAPE, we're pioneering the application of machine learning and environmental science to create accurate plant growth models. Our algorithms analyze thousands of data points to provide customized recommendations that adapt to your specific growing conditions.</p>
-        
-        <h3 style="margin-top: 2rem;">Sustainability Focus</h3>
-        <p>We're committed to promoting sustainable gardening practices. By optimizing water usage, nutrient application, and pest management, our system helps reduce environmental impact while improving plant health.</p>
-        
-        <h3 style="margin-top: 2rem;">Education & Empowerment</h3>
-        <p>TAPE isn't just about predictions - it's about building knowledge. Our detailed explanations and learning resources help gardeners of all levels understand the science behind plant care decisions.</p>
-        
-        <div style="margin-top: 2rem; text-align: center;">
-          <a href="#" class="btn" data-section="simulate">Try Our Simulator</a>
+            <div class="card-grid">
+                <div class="card">
+                    <i class="fas fa-microscope card-icon"></i>
+                    <h3>Precision Horticulture</h3>
+                    <p>At TAPE, we're pioneering the application of machine learning and environmental science to create accurate plant growth models. Our algorithms analyze thousands of data points to provide customized recommendations that adapt to your specific growing conditions.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-leaf card-icon"></i>
+                    <h3>Sustainability Focus</h3>
+                    <p>We're committed to promoting sustainable gardening practices. By optimizing water usage, nutrient application, and pest management, our system helps reduce environmental impact while improving plant health.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-book card-icon"></i>
+                    <h3>Education & Empowerment</h3>
+                    <p>TAPE isn't just about predictions - it's about building knowledge. Our detailed explanations and learning resources help gardeners of all levels understand the science behind plant care decisions.</p>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <a href="#" class="btn btn-block" data-section="simulate">Try Our Simulator</a>
+            </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- About Section -->
-  <section id="about-section">
-    <div class="container">
-      <div class="section-header">
-        <h2>About TAPE</h2>
-        <p>The future of intelligent plant care</p>
-      </div>
+    <section id="about-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>About TAPE</h2>
+                <p>The future of intelligent plant care</p>
+            </div>
 
-      <div class="card">
-        <h3>Our Technology</h3>
-        <p>TAPE combines advanced machine learning models with horticultural expertise. Our system integrates:</p>
-        <ul style="margin-left: 2rem; margin-bottom: 1.5rem;">
-          <li>Species-specific growth algorithms</li>
-          <li>Environmental impact modeling</li>
-          <li>Disease pattern recognition</li>
-          <li>Real-time data processing</li>
-        </ul>
-        
-        <h3>The Team</h3>
-        <p>Founded by plant scientists and AI researchers, our team brings together decades of experience in both technology and botany. We're passionate about creating tools that make professional-grade plant care accessible to everyone.</p>
-        
-        <h3 style="margin-top: 2rem;">Join Our Community</h3>
-        <p>Connect with other plant enthusiasts, share your growth results, and contribute to our expanding database of plant knowledge.</p>
-        
-        <div style="margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
-          <a href="#" class="btn" style="background: #3b5998;"><i class="fab fa-facebook-f"></i> Facebook</a>
-          <a href="#" class="btn" style="background: #1da1f2;"><i class="fab fa-twitter"></i> Twitter</a>
-          <a href="#" class="btn" style="background: #e1306c;"><i class="fab fa-instagram"></i> Instagram</a>
+            <div class="card-grid">
+                <div class="card">
+                    <i class="fas fa-cogs card-icon"></i>
+                    <h3>Our Technology</h3>
+                    <p>TAPE combines advanced machine learning models with horticultural expertise. Our system integrates:</p>
+                    <ul>
+                        <li>Species-specific growth algorithms</li>
+                        <li>Environmental impact modeling</li>
+                        <li>Disease pattern recognition</li>
+                        <li>Real-time data processing</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <i class="fas fa-users card-icon"></i>
+                    <h3>The Team</h3>
+                    <p>Founded by plant scientists and AI researchers, our team brings together decades of experience in both technology and botany. We're passionate about creating tools that make professional-grade plant care accessible to everyone.</p>
+                </div>
+                <div class="card">
+                    <i class="fas fa-handshake card-icon"></i>
+                    <h3>Join Our Community</h3>
+                    <p>Connect with other plant enthusiasts, share your growth results, and contribute to our expanding database of plant knowledge.</p>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link"><i class="fab fa-facebook"></i> Facebook</a>
+                        <a href="#" class="footer-link"><i class="fab fa-twitter"></i> Twitter</a>
+                        <a href="#" class="footer-link"><i class="fab fa-instagram"></i> Instagram</a>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <footer>
-    <div class="container">
-      <div class="footer-content">
-        <div class="logo" style="margin-bottom: 1rem;">
-          <i class="fas fa-seedling"></i>
-          <span>TAPE</span>
+    <section id="disease-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Plant Disease Detection</h2>
+                <p>Upload an image of your plant to identify potential diseases and receive treatment recommendations</p>
+            </div>
+
+            <div class="simulation-container">
+                <div class="form-container simulation-form">
+                    <form id="disease-form">
+                        <div class="form-group">
+                            <label for="plantImage">Upload Plant Image</label>
+                            <input type="file" id="plantImage" accept="image/*" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="plantTypeDisease">Plant Type</label>
+                            <input type="text" id="plantTypeDisease" placeholder="e.g., Tomato" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="symptoms">Symptoms Observed (Optional)</label>
+                            <textarea id="symptoms" rows="4" placeholder="Describe any visible symptoms (e.g., yellowing leaves, spots)"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-block">Analyze Plant Health</button>
+                    </form>
+                </div>
+
+                <div class="result-container">
+                    <div class="result-box" id="diseaseResultBox">
+                        <p>Your disease analysis results will appear here. The analysis will include:</p>
+                        <ul>
+                            <li>Disease identification with confidence level</li>
+                            <li>Symptoms analysis and disease stage</li>
+                            <li>Treatment recommendations</li>
+                            <li>Prevention strategies</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="footer-links">
-          <a href="#" class="footer-link" data-section="home">Home</a>
-          <a href="#" class="footer-link" data-section="simulate">Simulator</a>
-          <a href="#" class="footer-link" data-section="objective">Research</a>
-          <a href="#" class="footer-link" data-section="about">Team</a>
-          <a href="#" class="footer-link">Blog</a>
-          <a href="#" class="footer-link">Contact</a>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="logo">
+                    <i class="fas fa-seedling"></i>
+                    TAPE
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Home</a>
+                    <a href="#" class="footer-link">Simulator</a>
+                    <a href="#" class="footer-link">Research</a>
+                    <a href="#" class="footer-link">Team</a>
+                    <a href="#" class="footer-link">Blog</a>
+                    <a href="#" class="footer-link">Contact</a>
+                </div>
+                <p class="copyright">© 2025 Technology Assisted Plant Emulator. All rights reserved.</p>
+            </div>
         </div>
-        <p class="copyright">© 2025 Technology Assisted Plant Emulator. All rights reserved.</p>
-      </div>
-    </div>
-  </footer>
+    </footer>
 
-  <script>
-    // Navigation
-    const navLinks = document.querySelectorAll('.nav-link');
-    const sections = document.querySelectorAll('section');
-    const themeToggle = document.getElementById('themeToggle');
-
-    function setActiveSection(sectionId) {
-      // Update navigation
-      navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.dataset.section === sectionId) {
-          link.classList.add('active');
-        }
-      });
-
-      // Update sections
-      sections.forEach(section => {
-        section.classList.remove('active');
-        if (section.id === `${sectionId}-section`) {
-          section.classList.add('active');
-        }
-      });
-
-      // Scroll to top
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    navLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        setActiveSection(link.dataset.section);
-      });
-    });
-
-    // Theme toggle
-    function toggleTheme() {
-      document.body.classList.toggle('dark-mode');
-      const isDark = document.body.classList.contains('dark-mode');
-      localStorage.setItem('theme', isDark ? 'dark' : 'light');
-      
-      const icon = themeToggle.querySelector('i');
-      icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
-    }
-
-    // Check for saved theme preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      document.body.classList.add('dark-mode');
-      themeToggle.innerHTML = '<i class="fas fa-sun"></i>';
-    }
-
-    themeToggle.addEventListener('click', toggleTheme);
-
-    // Form submission
-    const simulateForm = document.getElementById('simulate-form');
-    const resultBox = document.getElementById('resultBox');
-
-    simulateForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      // Get form values
-      const plantType = document.getElementById('plantType').value;
-      const placement = document.getElementById('placement').value;
-      const soilType = document.getElementById('soilType').value;
-      const watering = document.getElementById('watering').value;
-      const sunlight = document.getElementById('sunlight').value;
-      const temperature = document.getElementById('temperature').value;
-      const humidity = document.getElementById('humidity').value;
-      const growthStage = document.getElementById('growthStage').value || 'not specified';
-      
-      // Show loading state
-      resultBox.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing plant data and environmental factors...';
-      
-      // Simulate API call
-      setTimeout(() => {
-        // Generate realistic simulation result
-        const result = `
-=== TAPE GROWTH SIMULATION REPORT ===
-
-Plant: ${plantType}
-Environment: ${placement} (${soilType} soil)
-Growth Stage: ${growthStage}
-
-CURRENT CONDITIONS:
-- Watering: ${watering}
-- Sunlight: ${sunlight}
-- Temperature: ${temperature}°C
-- Humidity: ${humidity}%
-
-GROWTH PREDICTION:
-Based on your inputs, we predict optimal growth with current conditions. 
-Expected growth rate: 1.2cm/week during vegetative stage.
-
-RECOMMENDATIONS:
-1. Maintain current watering schedule but check soil moisture 1" below surface.
-2. ${placement === 'Indoor' ? 'Rotate plant 90° weekly for even light exposure.' : 'Consider partial shade during hottest hours.'}
-3. Ideal temperature range: 18-26°C (current: ${temperature}°C).
-
-WATCH FOR:
-- Signs of ${soilType === 'Clay' ? 'overwatering' : 'underwatering'} in coming weeks
-- ${sunlight.includes('direct') ? 'Potential leaf scorch during midday' : 'Possible etiolation if light is insufficient'}
-
-NEXT STEPS:
-Monitor new growth for 2 weeks and adjust as needed. 
-Consider our premium plan for continuous monitoring alerts.
-
-=== END REPORT ===
-        `;
-        
-        resultBox.textContent = result;
-      }, 2000);
-    });
-
-    // Handle buttons with data-section attribute
-    document.querySelectorAll('[data-section]').forEach(btn => {
-      if (btn.tagName === 'A') {
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          setActiveSection(btn.dataset.section);
-        });
-      }
-    });
-  </script>
+    <script src="script.js"></script>
 </body>
-
 </html>
